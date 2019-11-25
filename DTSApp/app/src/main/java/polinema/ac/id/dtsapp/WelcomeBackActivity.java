@@ -1,5 +1,5 @@
 package polinema.ac.id.dtsapp;
-
+import polinema.ac.id.dtsapp.data.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +18,8 @@ public class WelcomeBackActivity extends AppCompatActivity {
     private static final String DUMMY_PASSWORD = "taufik";
 
     // Komponen
+    private User currentUser;
+    private  User currentPwd;
     private EditText edtUsername;
     private EditText edtPassword;
     private CheckBox chkRememberUsername;
@@ -152,7 +154,16 @@ public class WelcomeBackActivity extends AppCompatActivity {
         String currentUsername = this.edtUsername.getText().toString();
         String currentPassword = this.edtPassword.getText().toString();
 
-        return (Objects.equals(currentUsername, DUMMY_USERNAME)
-                && Objects.equals(currentPassword, DUMMY_PASSWORD));
+
+        // Mendapatkan DAO dari DTSAppDatabase
+        UserDao daoUser = AppDbProvider.getInstance(this).userDao();
+        daoUser.getAll();
+
+        User u = new User();
+
+        return (Objects.equals(currentUsername, u.username)
+                && Objects.equals(currentPassword, u.password));
+//        String all = daoUser.loadAllByIds(currentUsername.split());
+//         return all;
     }
 }
