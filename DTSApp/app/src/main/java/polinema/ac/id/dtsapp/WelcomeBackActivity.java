@@ -22,6 +22,11 @@ public class WelcomeBackActivity extends AppCompatActivity {
     private EditText edtPassword;
     private CheckBox chkRememberUsername;
     private CheckBox chkKeepLogin;
+    private SharedPreferences sharedPrefs;
+    private static  final String USERNAME_KEY = "key_username";
+    private static final String KEEP_LOGIN_KEY = "key_keep_login";
+
+
 
 
     @Override
@@ -29,7 +34,12 @@ public class WelcomeBackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_back);
 
+        this.sharedPrefs = this.getSharedPreferences("dtsapp_sharedprefs", Context.MODE_PRIVATE);
+
         this.initComponents();
+
+        this.autoLogin();
+        this.loadSavedUsername();
     }
 
     private void initComponents()
@@ -51,11 +61,19 @@ public class WelcomeBackActivity extends AppCompatActivity {
 
     public void onBtnLogin_Click(View view)
     {
-        Intent i = new Intent(WelcomeBackActivity.this, HomeActivity.class);
-        startActivity(i);
+        boolean valid = this.validateCredential();
 
-        this.saveUsername();
-        this.makeAutoLogin();
+        if (valid){
+            Intent i = new Intent(WelcomeBackActivity.this, HomeActivity.class);
+            startActivity(i);
+
+            this.saveUsername();
+            this.makeAutoLogin();
+        }else {
+            Toast.makeText(this, "Invalid username and/or password!", Toast.LENGTH_LONG).show();
+
+        }
+
     }
 
     public void onBtnRegister_Click(View view)
@@ -69,18 +87,45 @@ public class WelcomeBackActivity extends AppCompatActivity {
     private void saveUsername()
     {
         // Menyimpan username bila diperlukan
+
+        SharedPreferences.Editor editor = this.sharedPrefs.edit();
+
+        if(this.chkRememberUsername.isChecked())
+            editor.putString(USERNAME_KEY, this.edtUsername.getText().toString());
+        else
+            editor.remove(USERNAME_KEY);
+
+        editor.apply();
     }
 
     private void loadSavedUsername()
     {
         // Memeriksa apakah sebelumnya ada username yang tersimpan?
         // Jika ya, maka tampilkan username tersebut di EditText username.
+
+        String savedUsername = this.sharedPrefs.getString(USERNAME_KEY, null);
+
+        if(savedUsername != null)
+        {
+            this.edtUsername.setText(savedUsername);
+
+            this.chkRememberUsername.setChecked(true);
+        }
     }
 
 
     private void makeAutoLogin()
     {
         // Mengatur agar selanjutnya pada saat aplikasi dibuka menjadi otomatis login
+
+        SharedPreferences.Editor editor = this.sharedPrefs.edit();
+
+        if(this.chkKeepLogin.isChecked())
+            editor.putBoolean(KEEP_LOGIN_KEY, true);
+        else
+            editor.remove(KEEP_LOGIN_KEY);
+
+        editor.apply();
     }
 
     // QUIZ!
@@ -88,5 +133,13 @@ public class WelcomeBackActivity extends AppCompatActivity {
     {
         // Cek apakah sebelumnya aplikasi diatur agar bypass login?
         // Jika ya maka langsung buka activity berikutnya
+    }
+
+    private boolean validateCredential() {
+        String currentUsername = this.edtUsername.getText().toString();
+        String currentPassword = this.edtPassword.getText().toString();
+
+        return (Objects.equals(currentUsername, DUMMY_USERNAME)
+                && Objects.equals(currentPassword, DUMMY_PASSWORD));
     }
 }
