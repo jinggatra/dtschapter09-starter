@@ -157,13 +157,16 @@ public class WelcomeBackActivity extends AppCompatActivity {
 
         // Mendapatkan DAO dari DTSAppDatabase
         UserDao daoUser = AppDbProvider.getInstance(this).userDao();
-        daoUser.getAll();
+        daoUser.findByUsernameAndPassword(currentUsername, currentPassword);
 
-        User u = new User();
+        User u = daoUser.findByUsernameAndPassword(currentUsername, currentPassword);
 
-        return (Objects.equals(currentUsername, u.username)
-                && Objects.equals(currentPassword, u.password));
-//        String all = daoUser.loadAllByIds(currentUsername.split());
-//         return all;
+        if (u == null){
+            return false;
+        }else{
+            return true;
+        }
+//        return (Objects.equals(currentUsername, u.username)
+//                && Objects.equals(currentPassword, u.password));
     }
 }
