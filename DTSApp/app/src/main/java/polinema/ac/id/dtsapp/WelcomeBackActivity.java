@@ -14,8 +14,8 @@ import java.util.Objects;
 
 public class WelcomeBackActivity extends AppCompatActivity {
 
-    private static final String DUMMY_USERNAME = "dtsawardee";
-    private static final String DUMMY_PASSWORD = "dtsrocks";
+    private static final String DUMMY_USERNAME = "taufik";
+    private static final String DUMMY_PASSWORD = "taufik";
 
     // Komponen
     private EditText edtUsername;
